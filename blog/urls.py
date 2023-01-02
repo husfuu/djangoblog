@@ -13,4 +13,7 @@ urlpatterns = [
         views.post_list_by_category,
         name="post_category",
     ),
+    path("post/comment/<int:comment_id>/edit", views.comment_edit, name="comment_edit"),
+    path("post/comment/<int:comment_id>/delete", views.comment_delete, name="comment_delete")
+    # path("post/<int:post_id>/comment/", views.post_comment, name="post_comment"),
 ]
