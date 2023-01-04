@@ -27,7 +27,8 @@
             <h6 class="card-subtitle mb-2 text-muted">{{comment.published_date}}</h6>
         </p>
                 <h6 class="card-subtitle mb-2 text-muted">commented by {{comment.author}}</h6>
-                
+        
+        {% if user == comment.author %}
         <div class="d-flex gap-2" >
             <div>
                 <a class="btn btn-warning" href="{% url 'blog:comment_edit' comment_id=comment.id %}" > 
@@ -45,6 +46,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endfor %}

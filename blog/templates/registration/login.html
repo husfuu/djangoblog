@@ -1,0 +1,17 @@
+{% extends 'blog/base.html' %}
+{% block content%}
+<h1>Login page</h1>
+<form method="POST">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="mb-3">
+        <label for="exampleInputEmail1" class="form-label">{{field.label_tag}}</label>
+        <input type="{{field.name}}" name="{{field.name}}" class="form-control" aria-describedby="emailHelp">
+    </div>
+    {% endfor %}
+    <p> <a href="/sign-up">Create account</a> </p>
+    <button type="submit" class="btn btn-success" > Login </button>
+</form>
+
+
+{% endblock %}

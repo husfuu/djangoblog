@@ -3,9 +3,23 @@
 {% block content %}
 <h1>New post</h1>
 <form method="POST" class="post-form">{% csrf_token %}
-    <table>
-        {{ form.as_table }}
-    </table>
+    {% for field in form %}
+    <div> 
+        {% if field.label_tag == Category %}
+            <div class=d-flex> {{field}} </div>
+        {%endif%}
+            
+        {{field.label_tag}} {{field}}
+         
+        {% if field.errors %}
+        <ul class="errors">
+            {% for error in field.errors %}
+            <li> {{error}} </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+    {% endfor %}
     <button type="submit" class="save btn btn-success">Save</button>
 </form>
 <div>

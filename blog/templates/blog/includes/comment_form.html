@@ -1,5 +1,5 @@
 <h2>Add New Comment</h2>
-<form action="{% url "blog:post_detail" post.id %}" method="POST" >
+<form action="{% url "blog:post_comment" pk=post.id %}" method="POST" >
     {% csrf_token %}
     <table>
         {{form.as_table}}

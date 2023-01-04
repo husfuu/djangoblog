@@ -1,0 +1,20 @@
+<form method="POST" class="post-form">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group" >
+            {% if field.name == "category" %}
+                {{field.label_tag}}:
+                {% for choice in form.category.field.choices %}
+                    <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                        <input name="category" type="checkbox" class="btn-check" id="{{ choice.0 }}" value="{{ choice.0 }}" autocomplete="off">
+                        <label class="btn btn-outline-primary" for="{{ choice.0 }}">{{ choice.1}}</label>
+                    </div>
+                {% endfor %}
+            {% else %}
+                {{field.label_tag}}
+                {{field}}
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit" value="filter" class="btn btn-success" > Filter </button>
+</form>
