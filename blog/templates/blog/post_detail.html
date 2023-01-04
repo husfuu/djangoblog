@@ -28,7 +28,7 @@
         </p>
                 <h6 class="card-subtitle mb-2 text-muted">commented by {{comment.author}}</h6>
         
-        {% if user == comment.author %}
+        {% if user == comment.author or perms.blog.delete_comment and perms.blog.change_comment %}
         <div class="d-flex gap-2" >
             <div>
                 <a class="btn btn-warning" href="{% url 'blog:comment_edit' comment_id=comment.id %}" > 

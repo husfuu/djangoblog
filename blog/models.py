@@ -1,5 +1,28 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
+
+# # Define permission
+# content_type = ContentType.objects.get(app_label="blog", model="comment")
+
+# if not Permission.objects.filter(
+#     codename="can_edit_comment", content_type=content_type
+# ).exists():
+#     Permission.objects.create(
+#         codename="can_delete_comment",
+#         name="Can delete the post comment",
+#         content_type=content_type,
+#     )
+
+# if not Permission.objects.filter(
+#     codename="can_delete_comment", content_type=content_type
+# ).exists():
+#     Permission.objects.create(
+#         codename="can_delete_comment",
+#         name="Can delete the post comment",
+#         content_type=content_type,
+#     )
 
 # Create your models here.
 class Category(models.Model):

@@ -6,7 +6,7 @@ from django.views.decorators.http import require_POST
 from django.http import HttpResponse
 from django.db.models import Q, Count
 from django.contrib.auth import logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 
 
 def sign_up(request):
@@ -154,13 +154,14 @@ def post_list_by_category(request, category_id):
 
 
 @login_required(login_url="/login")
+@permission_required("blog.change_comment", login_url="/login", raise_exception=True)
 def comment_edit(request, comment_id):
     """ """
     comment = get_object_or_404(Comment, pk=comment_id)
     if request.method == "POST":
         form = CommentForm(request.POST, instance=comment)
         if form.is_valid():
-            if request.user == comment.author:
+            if request.user == comment.author or request.user.is_superuser:
                 comment.save()
                 return redirect("blog:post_detail", pk=comment.post.id)
             else:
@@ -172,6 +173,7 @@ def comment_edit(request, comment_id):
 
 
 @login_required(login_url="/login")
+@permission_required("blog.delete_comment", login_url="/login", raise_exception=True)
 def comment_delete(request, comment_id):
     """TODO"""
     comment = get_object_or_404(Comment, pk=comment_id)
