@@ -2,6 +2,9 @@
     {% csrf_token %}
     {% for field in form %}
         <div class="form-group" >
+            {% if field.errors %}
+                <p> {{field.errors}} </p>
+            {% endif %}
             {% if field.name == "category" %}
                 {{field.label_tag}}:
                 {% for choice in form.category.field.choices %}

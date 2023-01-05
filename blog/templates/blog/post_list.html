@@ -1,7 +1,16 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
+    <div class="d-flex gap-3"> 
+        {% for category in category_count_by_post %}
+        <p> {{category.name}}: </p>
+        <p> {{category.post_count}} </p>
+        {% endfor %}
+
+    </div>
+
     {% include "blog/includes/filter_form.html" %}
+
     {% for post in posts %}
         <div class="post">
             <h1><a href="{% url 'blog:post_detail' post.pk %}">{{ post.title }}</a></h1>

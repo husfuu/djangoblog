@@ -1,5 +1,5 @@
 from .models import Post, Category, Comment
-from .forms import PostForm, CommentForm, PostFilterForm, RegisterForm
+from .forms import PostForm, CommentForm, PostFilterForm, RegisterForm, EditPostForm
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -37,9 +37,14 @@ def post_list(request):
         post_count=Count("id")
     )
 
+    category_count_by_post = Category.objects.values("name").annotate(
+        post_count=Count("post")
+    )
+
+    form = PostFilterForm(request.POST or None)
     start_date = end_date = None
     if request.method == "POST":
-        form = PostFilterForm(request.POST)
+        # form = PostFilterForm(request.POST)
         if form.is_valid():
             # get data from the form
             title = form.cleaned_data["title"]
@@ -60,16 +65,25 @@ def post_list(request):
                 filters &= Q(category__in=category)
 
             if start_date and end_date:
-                filters &= Q(published_date__range=(start_date, end_date))
+                filters &= Q(published_date__gte=start_date) or Q(
+                    published_date__lte=end_date
+                )
 
             posts = Post.objects.filter(filters)
-    else:
-        form = PostFilterForm()
+        else:
+            print(form.errors)
+    # else:
+    #     form = PostFilterForm()
 
     return render(
         request,
         "blog/post_list.html",
-        {"form": form, "posts": posts, "post_count_by_author": post_count_by_author},
+        {
+            "form": form,
+            "posts": posts,
+            "post_count_by_author": post_count_by_author,
+            "category_count_by_post": category_count_by_post,
+        },
     )
 
 
@@ -103,9 +117,14 @@ def post_comment(request, pk):
 
 @login_required(login_url="/login")
 def post_create(request):
+    KATA_KOTOR = ["anjing", "goblok", "kampret", "asw", "jancok"]
+
     if request.method == "POST":
         form = PostForm(request.POST)
         if form.is_valid():
+            # body_text = request.POST["text"]
+            # if KATA_KOTOR in body_text:
+            #     censored_text = body_text.replace(KATA_KOTOR, "***")
             post = form.save(commit=False)
             post.author = request.user
             post.published_date = timezone.now()
@@ -124,18 +143,22 @@ def post_edit(request, pk):
     post = get_object_or_404(Post, pk=pk)
     if request.method == "POST":
         # put post object into form
-        form = PostForm(request.POST, instance=post)
+        form = EditPostForm(request.POST)
         if form.is_valid():
-            post = form.save(commit=False)
-            post.author = request.user
-            post.published_date = timezone.now()
-            post.save()
-            form.save_m2m()
+            form.save(post)
             return redirect("blog:post_detail", pk=post.pk)
     else:
-        form = PostForm(instance=post)
+        print("post :", post)
+        # print("post category:", post.categories)
+        form = EditPostForm(
+            initial={
+                "title": post.title,
+                "text": post.text,
+                "category": post.category.all(),
+            }
+        )
 
-    return render(request, "blog/post_create.html", {"form": form})
+    return render(request, "blog/post_edit.html", {"form": form})
 
 
 def post_list_by_category(request, category_id):
@@ -241,3 +264,28 @@ def comment_delete(request, comment_id):
 #     return render(
 #         request, "blog/comment.html", {"form": form, "post": post, "comment": comment}
 #     )
+
+
+# @login_required(login_url="/login")
+# def post_edit(request, pk):
+#     # get post data (object based on id)
+#     post = get_object_or_404(Post, pk=pk)
+#     if request.method == "POST":
+#         # put post object into form
+#         form = EditPostForm(request.POST, instance=post)
+#         if form.is_valid():
+#             user = User.objects.get(id=request.user.id)
+#             # title = form.cleaned_data['title']
+#             # text = form.cleaned_data['text']
+#             # category = form.cleaned_data['category']
+#             form.save(author=user)
+#             # post = form.save(commit=False)
+#             # post.author = request.user
+#             # post.published_date = timezone.now()
+#             # post.save()
+#             # form.save_m2m()
+#             return redirect("blog:post_detail", pk=post.pk)
+#     else:
+#         form = EditPostForm(instance=post)
+
+#     return render(request, "blog/post_create.html", {"form": form})
